@@ -1,0 +1,23 @@
+# Use an official Python runtime as the base image
+FROM python:3.9-slim
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the specific files to the working directory
+COPY ./requirements.txt /app/requirements.txt
+COPY ./app.py /app/app.py
+COPY ./model.pkl /app/model.pkl
+COPY ./preprocessors.py /app/preprocessors.py
+
+# Install the Python dependencies
+RUN pip install -r requirements.txt
+RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
+RUN apt-get -y install curl
+RUN apt-get install libgomp1
+
+# Expose the port on which the FastAPI app will run
+EXPOSE 1111
+
+# Start the FastAPI app when the container is run
+CMD ["uvicorn", "main:app", "--host", "server", "--port", "1111"]
